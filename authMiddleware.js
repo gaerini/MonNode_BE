@@ -7,7 +7,14 @@ const auth = (req, res, next) => {
     const key = process.env.JWT_SECRET;
     
     try {
-      const token = req.headers["Authorization"];
+      const authorizationHeader = req.headers["authorization"];
+        
+      if (!authorizationHeader) {
+          throw new Error('토큰이 제공되지 않았습니다.');
+      }
+
+      const token = authorizationHeader.split(' ')[1];
+      console.log(token);
       const decoded = jwt.verify(token, key);
       req.decoded = decoded;
       req.userId = decoded.userId;

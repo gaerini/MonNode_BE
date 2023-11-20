@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./database");
+const Genre = require("./genre");
 
 const User = sequelize.define("User", {
   username: {
@@ -24,5 +25,7 @@ User.createNewUser = async function (userData) {
     throw error;
   }
 };
+
+User.hasMany(Genre, { foreignKey: "genereId" });
 
 module.exports = User;

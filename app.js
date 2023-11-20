@@ -5,6 +5,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const User = require("./models/user");
+const Post = require("./models/post");
+
 const sequelize = require("./models/database");
 sequelize
   .sync()
@@ -17,6 +19,10 @@ sequelize
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+
+let multer = require("multer");
+let upload = multer();
 
 app.get("/", (req, res) => {
   res.send("Welcome!!");
@@ -38,6 +44,26 @@ app.post("/signup", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
+app.post(
+  "/newpost",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "decibels" },
+    { name: "content" },
+    { name: "userId" },
+  ]),
+  async (req, res) => {
+    try {
+      console.log(req.body);
+      const { image, decibels, content } = req.body;
+
+      const newPost = await Post.createNewPost(image, decibels, content);
+    } catch (err) {
+      res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+  }
+);
 
 app.listen(port, () => {
   console.log("listening on port: ", port);

@@ -1,9 +1,10 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("./database");
+
 const User = require("./user");
 
 const Post = sequelize.define("Post", {
-  image: {
+  imageList: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -15,6 +16,10 @@ const Post = sequelize.define("Post", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 Post.createNewPost = async function (postData) {
@@ -22,10 +27,20 @@ Post.createNewPost = async function (postData) {
     const newPost = await this.create(postData);
     return newPost;
   } catch (err) {
-    throw error;
+    throw err;
   }
 };
 
+Post.findAllbyUserId = async function (userId) {
+  try {
+    const posts = await this.findAll({
+      where: { userId: userId },
+    });
+    return posts;
+  } catch (err) {
+    throw err;
+  }
+};
 Post.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = Post;

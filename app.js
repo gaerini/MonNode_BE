@@ -4,14 +4,14 @@ const port = process.env.PORT || 3000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 //Auth 관련
-const jwt = require('jsonwebtoken');
-const auth = require('./authMiddleware.js');
+const jwt = require("jsonwebtoken");
+const auth = require("./authMiddleware.js");
 const User = require("./models/user");
 const Post = require("./models/post");
 
 const sequelize = require("./models/database");
 
-require('dotenv').config();
+require("dotenv").config();
 
 sequelize
   .sync()
@@ -27,6 +27,19 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.send("yay!");
+});
+
+app.get("/myposts", auth, async (req, res) => {
+  console.log(req.userId);
+  try {
+    const userId = req.userId;
+    const userPosts = await Post.findAllbyUserId(userId);
+
+    res.json({ success: true, userPosts: userPosts });
+  } catch (err) {
+    console.error("Error retrieving user posts:", err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
 });
 
 app.post("/signup", async (req, res) => {
@@ -46,24 +59,24 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/newpost", async (req, res) => {
+app.post("/newpost", auth, async (req, res) => {
   try {
     console.log(req.body);
-    const { image, decibels, content } = req.body;
+    const { imageList, decibels, content, userId } = req.body;
 
-    const newPost = await Post.createNewPost({ image, decibels, content });
+    const newPost = await Post.createNewPost({
+      imageList,
+      decibels,
+      content,
+      userId,
+    });
     res.send({ success: true, post: newPost });
   } catch (err) {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
 
-app.listen(port, () => {
-  console.log("listening on port: ", port);
-});
-
-
-app.post('/login', async (req, res, next) => {
+app.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
@@ -79,37 +92,37 @@ app.post('/login', async (req, res, next) => {
     if (!user) {
       return res.status(401).json({
         code: 401,
-        message: '인증실패',
+        message: "인증실패",
       });
     }
 
     // 사용자가 있으면 토큰 발급
     const key = process.env.JWT_SECRET;
-    console.log('Key: ',key);
+    console.log("Key: ", key);
     const token = jwt.sign(
       {
-        type: 'JWT',
+        type: "JWT",
         userId: user.id,
         email: user.email,
       },
       key,
       {
-        expiresIn: '15m', // 15분후 만료
-        issuer: '토큰발급자',
+        expiresIn: "15m", // 15분후 만료
+        issuer: "토큰발급자",
       }
     );
 
     // 응답
     return res.status(200).json({
       code: 200,
-      message: '토큰이 생성되었습니다.',
+      message: "토큰이 생성되었습니다.",
       token: token,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
       code: 500,
-      message: '서버 에러',
+      message: "서버 에러",
     });
   }
 });
@@ -143,4 +156,8 @@ app.get("/payload", auth, (req, res) => {
         message: "서버 에러",
       });
     });
+});
+
+app.listen(port, () => {
+  console.log("listening on port: ", port);
 });

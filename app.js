@@ -3,6 +3,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
+
 //Auth 관련
 const jwt = require("jsonwebtoken");
 const auth = require("./authMiddleware.js");
@@ -45,12 +46,12 @@ app.get("/myposts", auth, async (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     console.log(req);
-    const { username, email, password } = req.body;
+    const { username, email, genre } = req.body;
 
     const newUser = await User.createNewUser({
       username,
       email,
-      password,
+      genre,
     });
 
     res.json({ success: true, user: newUser });
@@ -77,14 +78,13 @@ app.post("/newpost", auth, async (req, res) => {
 });
 
 app.post("/login", async (req, res, next) => {
-  const { email, password } = req.body;
+  const { username } = req.body;
 
   try {
     // 이메일과 패스워드를 사용하여 사용자를 찾습니다.
     const user = await User.findOne({
       where: {
-        email: email,
-        password: password,
+        username: username,
       },
     });
 
@@ -107,7 +107,7 @@ app.post("/login", async (req, res, next) => {
       },
       key,
       {
-        expiresIn: "15m", // 15분후 만료
+        expiresIn: "1h", // 1시간 후 만료
         issuer: "토큰발급자",
       }
     );

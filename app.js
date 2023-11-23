@@ -3,11 +3,14 @@ const app = express();
 const port = process.env.PORT || 3000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
-//Auth
+
+
+//Auth 관련
 const jwt = require("jsonwebtoken");
 const auth = require("./authMiddleware.js");
 const User = require("./models/user");
 const Post = require("./models/post");
+const Friend = require("./models/friend");
 
 const sequelize = require("./models/database");
 
@@ -43,6 +46,26 @@ app.get("/myposts", auth, async (req, res) => {
   }
 });
 
+app.post("/signup", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { username, email, genre, profile } = req.body;
+
+    const newUser = await User.createNewUser({
+      username,
+      email,
+      genre,
+      profile
+    });
+
+    res.json({ success: true, user: newUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+
 app.post("/newpost", auth, async (req, res) => {
   try {
     console.log(req.body);
@@ -62,33 +85,14 @@ app.post("/newpost", auth, async (req, res) => {
 
 //auth api
 
-app.post("/signup", async (req, res) => {
-  try {
-    console.log(req);
-    const { username, email, password, profile} = req.body;
-
-    const newUser = await User.createNewUser({
-      username,
-      email,
-      password,
-      profile,
-    });
-
-    res.json({ message:"User is created successfully", user: newUser });
-  } catch (err) {
-    res.status(500).json({message: "Internal Server Error" });
-  }
-});
-
 app.post("/login", async (req, res, next) => {
-  const { email, password } = req.body;
+  const { username } = req.body;
 
   try {
     // find user by email and password
     const user = await User.findOne({
       where: {
-        email: email,
-        password: password,
+        username: username,
       },
     });
 
@@ -108,7 +112,8 @@ app.post("/login", async (req, res, next) => {
       },
       key,
       {
-        expiresIn: "15m", // valid time
+        expiresIn: "1h", // 1시간 후 만료
+
         issuer: "토큰발급자",
       }
     );
@@ -120,6 +125,21 @@ app.post("/login", async (req, res, next) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({message: "Interner sever error",});
+  }
+});
+
+app.post("/friendRequest", async (req, res) => {
+  console.log(req.body);
+  const { requesterId, addresseeId } = req.body;
+  try {
+    const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
+    res.json({ success: true, user: newRequest });
+  } catch (err) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      message: "서버 에러",
+    });
   }
 });
 

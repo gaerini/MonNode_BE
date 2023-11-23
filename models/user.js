@@ -15,6 +15,10 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  profile: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 
 User.createNewUser = async function (userData) {

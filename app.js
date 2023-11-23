@@ -4,7 +4,6 @@ const port = process.env.PORT || 3000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-
 //Auth 관련
 const jwt = require("jsonwebtoken");
 const auth = require("./authMiddleware.js");
@@ -55,7 +54,7 @@ app.post("/signup", async (req, res) => {
       username,
       email,
       genre,
-      profile
+      profile,
     });
 
     res.json({ success: true, user: newUser });
@@ -64,7 +63,6 @@ app.post("/signup", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
-
 
 app.post("/newpost", auth, async (req, res) => {
   try {
@@ -98,7 +96,7 @@ app.post("/login", async (req, res, next) => {
 
     // cannot find user
     if (!user) {
-      return res.status(401).json({message: "Cannot find user",});
+      return res.status(401).json({ message: "Cannot find user" });
     }
 
     // token is issued
@@ -124,7 +122,7 @@ app.post("/login", async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({message: "Interner sever error",});
+    return res.status(500).json({ message: "Interner sever error" });
   }
 });
 
@@ -143,6 +141,20 @@ app.post("/friendRequest", async (req, res) => {
   }
 });
 
+app.get("/friendRetrieve", async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const friends = await Friend.retrieveFriends(userId);
+    return friends;
+  } catch (err) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      message: "서버 에러",
+    });
+  }
+});
+
 app.get("/payload", auth, (req, res) => {
   const userId = req.userId;
 
@@ -150,7 +162,7 @@ app.get("/payload", auth, (req, res) => {
   User.findByPk(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).json({message: "Cannot find user",});
+        return res.status(404).json({ message: "Cannot find user" });
       }
 
       return res.status(200).json({
@@ -172,7 +184,7 @@ app.get("/payload", auth, (req, res) => {
 
 app.post("/user", async (req, res) => {
   console.log(req);
-  const {username, email, password, profile} = req.body;
+  const { username, email, genre, profile } = req.body;
   try {
     const existingUser = await User.findOne({
       where: {
@@ -184,7 +196,7 @@ app.post("/user", async (req, res) => {
       const newUser = await User.create({
         username,
         email,
-        password,
+        genre,
         profile,
       });
       return res.status(200).json(newUser);
@@ -192,9 +204,8 @@ app.post("/user", async (req, res) => {
 
     return res.status(200).json(existingUser);
   } catch (error) {
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-  
 });
 
 app.listen(port, () => {

@@ -4,6 +4,7 @@ const port = process.env.PORT || 3000;
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+
 //Auth 관련
 const jwt = require("jsonwebtoken");
 const auth = require("./authMiddleware.js");
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
   res.send("yay!");
 });
 
+//post api
 app.get("/myposts", auth, async (req, res) => {
   console.log(req.userId);
   try {
@@ -47,12 +49,13 @@ app.get("/myposts", auth, async (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     console.log(req.body);
-    const { username, email, genre } = req.body;
+    const { username, email, genre, profile } = req.body;
 
     const newUser = await User.createNewUser({
       username,
       email,
       genre,
+      profile
     });
 
     res.json({ success: true, user: newUser });
@@ -61,6 +64,7 @@ app.post("/signup", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
 
 app.post("/newpost", auth, async (req, res) => {
   try {
@@ -79,26 +83,25 @@ app.post("/newpost", auth, async (req, res) => {
   }
 });
 
+//auth api
+
 app.post("/login", async (req, res, next) => {
   const { username } = req.body;
 
   try {
-    // 이메일과 패스워드를 사용하여 사용자를 찾습니다.
+    // find user by email and password
     const user = await User.findOne({
       where: {
         username: username,
       },
     });
 
-    // 사용자가 없으면 인증 실패
+    // cannot find user
     if (!user) {
-      return res.status(401).json({
-        code: 401,
-        message: "인증실패",
-      });
+      return res.status(401).json({message: "Cannot find user",});
     }
 
-    // 사용자가 있으면 토큰 발급
+    // token is issued
     const key = process.env.JWT_SECRET;
     console.log("Key: ", key);
     const token = jwt.sign(
@@ -110,22 +113,18 @@ app.post("/login", async (req, res, next) => {
       key,
       {
         expiresIn: "1h", // 1시간 후 만료
+
         issuer: "토큰발급자",
       }
     );
 
-    // 응답
     return res.status(200).json({
-      code: 200,
-      message: "토큰이 생성되었습니다.",
+      message: "Token has been created",
       token: token,
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
-      code: 500,
-      message: "서버 에러",
-    });
+    return res.status(500).json({message: "Interner sever error",});
   }
 });
 
@@ -147,19 +146,15 @@ app.post("/friendRequest", async (req, res) => {
 app.get("/payload", auth, (req, res) => {
   const userId = req.userId;
 
-  // 여기에서는 사용자 ID를 기반으로 사용자 정보를 가져오는 예시로 Sequelize를 사용합니다.
+  // Load user's info by userId
   User.findByPk(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).json({
-          code: 404,
-          message: "사용자를 찾을 수 없습니다.",
-        });
+        return res.status(404).json({message: "Cannot find user",});
       }
 
       return res.status(200).json({
-        code: 200,
-        message: "토큰이 정상입니다.",
+        message: "Token is valid",
         data: {
           email: user.email,
           password: user.password,
@@ -170,9 +165,36 @@ app.get("/payload", auth, (req, res) => {
       console.error(error);
       return res.status(500).json({
         code: 500,
-        message: "서버 에러",
+        message: "Interner server error",
       });
     });
+});
+
+app.post("/user", async (req, res) => {
+  console.log(req);
+  const {username, email, password, profile} = req.body;
+  try {
+    const existingUser = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!existingUser) {
+      const newUser = await User.create({
+        username,
+        email,
+        password,
+        profile,
+      });
+      return res.status(200).json(newUser);
+    }
+
+    return res.status(200).json(existingUser);
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+  
 });
 
 app.listen(port, () => {

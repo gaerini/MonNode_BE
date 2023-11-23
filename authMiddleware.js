@@ -23,23 +23,14 @@ const auth = (req, res, next) => {
       console.error(error);
   
       if (error.name === "TokenExpiredError") {
-        return res.status(419).json({
-          code: 419,
-          message: "토큰이 만료되었습니다.",
-        });
+        return res.status(419).json({message: "Token is expried",});
       }
   
       if (error.name === "JsonWebTokenError") {
-        return res.status(401).json({
-          code: 401,
-          message: "유효하지 않은 토큰입니다.",
-        });
+        return res.status(401).json({message: "Token is not valid",});
       }
       
-      return res.status(500).json({
-        code: 500,
-        message: "서버 에러",
-      });
+      return res.status(500).json({message: "Interner server error",});
     }
   };
 

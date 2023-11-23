@@ -143,6 +143,20 @@ app.post("/friendRequest", async (req, res) => {
   }
 });
 
+app.post("/friendUpdate", async (req, res) =>{
+  console.log(req.body);
+  const { requesterId, addresseeId, action } = req.body;
+  try{
+    const newUpdate = await Friend.updateFriendship(requesterId, addresseeId, action);
+    res.json({ success: true, status: newUpdate });
+  } catch(err){
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: "Interner server error",
+    });
+  }
+})
 app.get("/payload", auth, (req, res) => {
   const userId = req.userId;
 

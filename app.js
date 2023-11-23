@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 const auth = require("./authMiddleware.js");
 const User = require("./models/user");
 const Post = require("./models/post");
+const Friend = require("./models/friend");
 
 const sequelize = require("./models/database");
 
@@ -45,7 +46,7 @@ app.get("/myposts", auth, async (req, res) => {
 
 app.post("/signup", async (req, res) => {
   try {
-    console.log(req);
+    console.log(req.body);
     const { username, email, genre } = req.body;
 
     const newUser = await User.createNewUser({
@@ -56,6 +57,7 @@ app.post("/signup", async (req, res) => {
 
     res.json({ success: true, user: newUser });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
@@ -119,6 +121,21 @@ app.post("/login", async (req, res, next) => {
       token: token,
     });
   } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      message: "서버 에러",
+    });
+  }
+});
+
+app.post("/friendRequest", async (req, res) => {
+  console.log(req.body);
+  const { requesterId, addresseeId } = req.body;
+  try {
+    const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
+    res.json({ success: true, user: newRequest });
+  } catch (err) {
     console.error(error);
     return res.status(500).json({
       code: 500,

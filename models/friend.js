@@ -27,4 +27,34 @@ Friend.requestFriendship = async function (requesterId, addresseeId) {
   }
 };
 
+Friend.updateFriendship = async function (requesterId, addresseeId, action) {
+  try {
+    const friend = await Friend.findOne({
+      where: {
+        requesterId: requesterId,
+        addresseeId: addresseeId,
+        status: "requested",
+      },
+    });
+
+    if (!friend) {
+      return res.status(404).json({
+        code: 404,
+        message: "Friend request not found",
+      });
+    }
+
+    friend.status = action === "accept" ? "accepted" : "rejected";
+    await friend.save();
+
+    return friend;
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: "Interner server error",
+    });
+  }
+};
+
 module.exports = Friend;

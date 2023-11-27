@@ -42,4 +42,17 @@ User.retrieveUserName = async function (userId) {
   }
 };
 
+User.findUserByEmail = async function(email){
+  try{
+    const user = await this.findOne({
+      where:{
+        email: email,
+      },
+    });
+    return user.dataValues.userId;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = User;

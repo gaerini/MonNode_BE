@@ -32,10 +32,10 @@ app.get("/", (req, res) => {
 });
 
 //post api
-app.get("/myposts", auth, async (req, res) => {
-  console.log(req.userId);
+app.get("/myposts", async (req, res) => {
+  console.log(req.body);
   try {
-    const userId = req.userId;
+    const userId = await User.findUserByEmail(req.body.email);
     const userPosts = await Post.findAllbyUserId(userId);
 
     res.json({ success: true, userPosts: userPosts });
@@ -64,10 +64,11 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/newpost", auth, async (req, res) => {
+app.post("/newpost", async (req, res) => {
   try {
     console.log(req.body);
-    const { imageList, decibels, content, userId } = req.body;
+    const userId = await User.findUserByEmail(req.body.email);
+    const { imageList, decibels, content } = req.body; 
 
     const newPost = await Post.createNewPost({
       imageList,
@@ -81,7 +82,7 @@ app.post("/newpost", auth, async (req, res) => {
   }
 });
 
-//auth api
+//auth api; we don't use this api
 
 app.post("/login", async (req, res, next) => {
   const { username } = req.body;
@@ -128,7 +129,8 @@ app.post("/login", async (req, res, next) => {
 
 app.post("/friendRequest", async (req, res) => {
   console.log(req.body);
-  const { requesterId, addresseeId } = req.body;
+  const requesterId =  User.findUserByEmail(req.requsterEmail);
+  const addresseeId =  User.findUserByEmail(req.addresseeEmail); //find req, add user by email
   try {
     const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
     res.json({ success: true, user: newRequest });
@@ -142,7 +144,8 @@ app.post("/friendRequest", async (req, res) => {
 });
 
 app.get("/friendRetrieve", async (req, res) => {
-  const { userId } = req.body;
+  console(req.body);
+  const userId = User.findUserByEmail(req.email);
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     const usernamePromises = friendsIdList.map((friendId) =>
@@ -161,7 +164,9 @@ app.get("/friendRetrieve", async (req, res) => {
 
 app.post("/friendUpdate", async (req, res) => {
   console.log(req.body);
-  const { requesterId, addresseeId, action } = req.body;
+  const requesterId =  User.findUserByEmail(req.requsterEmail);
+  const addresseeId =  User.findUserByEmail(req.addresseeEmail); //find req, add user by email
+  const { action } = req.body;
   try {
     const newUpdate = await Friend.updateFriendship(
       requesterId,
@@ -179,7 +184,8 @@ app.post("/friendUpdate", async (req, res) => {
 });
 
 app.get("/payload", auth, (req, res) => {
-  const userId = req.userId;
+  console.log(req.body);
+  const userId = User.findUserByEmail(req.email);
 
   // Load user's info by userId
   User.findByPk(userId)

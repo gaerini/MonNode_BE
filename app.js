@@ -141,15 +141,17 @@ app.post("/friendRequest", async (req, res) => {
   }
 });
 
-
-
 app.get("/friendRetrieve", async (req, res) => {
   const { userId } = req.body;
   try {
-    const friends = await Friend.retrieveFriends(userId);
-    return friends;
+    const friendsIdList = await Friend.retrieveFriends(userId);
+    const usernamePromises = friendsIdList.map((friendId) =>
+      User.retrieveUserName(friendId)
+    );
+    const usernameList = await Promise.all(usernamePromises);
+    res.json({ success: true, friends: usernameList });
   } catch (err) {
-    console.error(error);
+    console.error(err);
     return res.status(500).json({
       code: 500,
       message: "서버 에러",
@@ -157,22 +159,25 @@ app.get("/friendRetrieve", async (req, res) => {
   }
 });
 
-
-app.post("/friendUpdate", async (req, res) =>{
+app.post("/friendUpdate", async (req, res) => {
   console.log(req.body);
   const { requesterId, addresseeId, action } = req.body;
-  try{
-    const newUpdate = await Friend.updateFriendship(requesterId, addresseeId, action);
+  try {
+    const newUpdate = await Friend.updateFriendship(
+      requesterId,
+      addresseeId,
+      action
+    );
     res.json({ success: true, status: newUpdate });
-  } catch(err){
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
       code: 500,
       message: "Interner server error",
     });
   }
-})
->>>>>>> bcd9ba59b095d6baff53087534f4b709124d993e
+});
+
 app.get("/payload", auth, (req, res) => {
   const userId = req.userId;
 

@@ -33,7 +33,7 @@ Friend.requestFriendship = async function (requesterId, addresseeId) {
       },
     });
 
-    if (!currentRequest) {
+    if (currentRequest.length === 0) {
       const newRequest = await Friend.create({
         requesterId: requesterId,
         addresseeId: addresseeId,
@@ -44,10 +44,7 @@ Friend.requestFriendship = async function (requesterId, addresseeId) {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      code: 500,
-      message: "서버 에러",
-    });
+    throw err;
   }
 };
 
@@ -61,11 +58,8 @@ Friend.updateFriendship = async function (requesterId, addresseeId, action) {
       },
     });
 
-    if (!friend) {
-      return res.status(404).json({
-        code: 404,
-        message: "Friend request not found",
-      });
+    if (friend.length === 0) {
+      return "없는 요청입니다";
     }
 
     friend.status = action === "accept" ? "accepted" : "rejected";
@@ -73,11 +67,7 @@ Friend.updateFriendship = async function (requesterId, addresseeId, action) {
 
     return friend;
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      code: 500,
-      message: "Interner server error",
-    });
+    throw err;
   }
 };
 
@@ -91,7 +81,19 @@ Friend.retrieveFriends = async function (userId) {
         ],
       },
     });
-    return friends;
+    if (friends.length === 0) {
+      return "친구가 없습니다.";
+    } else {
+      friendsIdList = [];
+      friends.map((friend) => {
+        if (friend.requesterId === userId) {
+          friendsIdList.push(friend.requesterId);
+        } else if (friend.addresseeId === userId) {
+          friendsIdList.push(friend.addresseeId);
+        }
+      });
+    }
+    return friendsIdList;
   } catch (err) {
     throw err;
   }

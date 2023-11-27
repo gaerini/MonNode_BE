@@ -29,4 +29,17 @@ User.createNewUser = async function (userData) {
   }
 };
 
+User.retrieveUserName = async function (userId) {
+  try {
+    const user = await this.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    return user.dataValues.username;
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = User;

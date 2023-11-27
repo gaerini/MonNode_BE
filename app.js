@@ -130,13 +130,27 @@ app.post("/login", async (req, res, next) => {
 
 app.post("/friendRequest", async (req, res) => {
   console.log(req.body);
-  const requesterId = User.findUserByEmail(req.requsterEmail);
-  const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
+  const requesterUser = await User.findOne({
+    where: {
+      email: req.body.requesterEmail,
+    },
+  });
+  
+  const addresseeUser = await User.findOne({
+    where: {
+      email: req.body.addresseeEmail,
+    },
+  });
+  const requesterId = requesterUser.dataValues.id;
+  const addresseeId = addresseeUser.dataValues.id;
+   //find req, add user by email
+  console.log(requesterId, addresseeId);
+  console.log(req.body.requesterEmail);
   try {
     const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
     res.json({ success: true, user: newRequest });
   } catch (err) {
-    console.error(error);
+    console.error(err);
     return res.status(500).json({
       code: 500,
       message: "서버 에러",
@@ -165,9 +179,20 @@ app.get("/friendRetrieve", async (req, res) => {
 
 app.post("/friendUpdate", async (req, res) => {
   console.log(req.body);
-  const requesterId = User.findUserByEmail(req.requsterEmail);
-  const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
-  const { action } = req.body;
+  const requesterUser = await User.findOne({
+    where: {
+      email: req.body.requesterEmail,
+    },
+  });
+  
+  const addresseeUser = await User.findOne({
+    where: {
+      email: req.body.addresseeEmail,
+    },
+  });
+  const requesterId = requesterUser.dataValues.id;
+  const addresseeId = addresseeUser.dataValues.id; //find req, add user by email
+  const action = req.body.action;
   try {
     const newUpdate = await Friend.updateFriendship(
       requesterId,

@@ -68,7 +68,7 @@ app.post("/newpost", async (req, res) => {
   try {
     console.log(req.body);
     const userId = await User.findUserByEmail(req.body.email);
-    const { imageList, decibels, content } = req.body; 
+    const { imageList, decibels, content } = req.body;
 
     const newPost = await Post.createNewPost({
       imageList,
@@ -129,8 +129,8 @@ app.post("/login", async (req, res, next) => {
 
 app.post("/friendRequest", async (req, res) => {
   console.log(req.body);
-  const requesterId =  User.findUserByEmail(req.requsterEmail);
-  const addresseeId =  User.findUserByEmail(req.addresseeEmail); //find req, add user by email
+  const requesterId = User.findUserByEmail(req.requsterEmail);
+  const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
   try {
     const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
     res.json({ success: true, user: newRequest });
@@ -164,8 +164,8 @@ app.get("/friendRetrieve", async (req, res) => {
 
 app.post("/friendUpdate", async (req, res) => {
   console.log(req.body);
-  const requesterId =  User.findUserByEmail(req.requsterEmail);
-  const addresseeId =  User.findUserByEmail(req.addresseeEmail); //find req, add user by email
+  const requesterId = User.findUserByEmail(req.requsterEmail);
+  const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
   const { action } = req.body;
   try {
     const newUpdate = await Friend.updateFriendship(
@@ -267,6 +267,13 @@ app.put("/user", async (req, res) => {
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
+
+app.delete("/deletePost", async (req, res) => {
+  const postId = req.postId;
+  try {
+    await Post.removePost(postId);
+  } catch (err) {
+
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

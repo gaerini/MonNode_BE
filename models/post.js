@@ -37,6 +37,20 @@ Post.findAllbyUserId = async function (userId) {
     throw err;
   }
 };
+
+Post.removePost = async function (postId) {
+  try {
+    const post = await this.findOne({
+      where: { id: postId },
+    });
+    if (post) {
+      await this.destroy();
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 Post.belongsTo(User, { foreignKey: "userId" });
 
 module.exports = Post;

@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 
 //post api
 app.get("/myposts", async (req, res) => {
-  console.log(req.body.email);
+  console.log(req.body);
   try {
     const userId = await User.findUserByEmail(req.body.email);
     console.log(userId);
@@ -236,7 +236,6 @@ app.post("/user", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 app.put("/user", async (req, res) => {
   const { username, email, nickname, genre, profile } = req.body;
 
@@ -268,13 +267,14 @@ app.put("/user", async (req, res) => {
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
+  }
+});
 
 app.delete("/deletePost", async (req, res) => {
   const postId = req.postId;
   try {
     await Post.removePost(postId);
   } catch (err) {
-
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

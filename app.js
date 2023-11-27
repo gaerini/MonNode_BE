@@ -33,9 +33,10 @@ app.get("/", (req, res) => {
 
 //post api
 app.get("/myposts", async (req, res) => {
-  console.log(req.body);
+  console.log(req.body.email);
   try {
     const userId = await User.findUserByEmail(req.body.email);
+    console.log(userId);
     const userPosts = await Post.findAllbyUserId(userId);
 
     res.json({ success: true, userPosts: userPosts });

@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 //post api
-app.get("/myposts", auth, async (req, res) => {
+app.get("/myposts", async (req, res) => {
   console.log(req.userId);
   try {
     const userId = req.userId;
@@ -227,6 +227,15 @@ app.post("/user", async (req, res) => {
 
     return res.status(200).json(existingUser);
   } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.delete("/deletePost", async (req, res) => {
+  const postId = req.postId;
+  try {
+    await Post.removePost(postId);
+  } catch (err) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

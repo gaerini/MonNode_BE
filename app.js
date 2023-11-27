@@ -214,7 +214,7 @@ app.get("/payload", auth, (req, res) => {
 
 app.post("/user", async (req, res) => {
   console.log(req);
-  const { username, email, genre, profile } = req.body;
+  const { username, email, profile } = req.body;
   try {
     const existingUser = await User.findOne({
       where: {
@@ -226,7 +226,6 @@ app.post("/user", async (req, res) => {
       const newUser = await User.create({
         username,
         email,
-        genre,
         profile,
       });
       return res.status(200).json(newUser);
@@ -238,11 +237,44 @@ app.post("/user", async (req, res) => {
   }
 });
 
+app.put("/user", async (req, res) => {
+  const { username, email, nickname, genre, profile } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await User.update(
+      { nickname: nickname, genre: genre },
+      {
+        where: {
+          id: user.id,
+        },
+      }
+    );
+    const updatedUser = await User.findOne({
+      where: {
+        id: user.id,
+      },
+    });
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+
 app.delete("/deletePost", async (req, res) => {
   const postId = req.postId;
   try {
     await Post.removePost(postId);
   } catch (err) {
+
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

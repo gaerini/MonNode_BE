@@ -10,9 +10,13 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  nickname: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   genre: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   profile: {
     type: DataTypes.STRING,

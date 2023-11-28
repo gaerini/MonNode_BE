@@ -45,6 +45,8 @@ Post.removePost = async function (postId) {
     });
     if (post) {
       await this.destroy();
+    } else {
+      return "없는 포스트입니다.";
     }
   } catch (err) {
     throw err;

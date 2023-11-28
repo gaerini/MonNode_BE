@@ -26,6 +26,7 @@ sequelize
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("yay!");
@@ -213,7 +214,7 @@ app.get("/payload", auth, (req, res) => {
 });
 
 app.post("/user", async (req, res) => {
-  console.log(req);
+  console.log(req.body);
   const { username, email, profile } = req.body;
   try {
     const existingUser = await User.findOne({
@@ -233,6 +234,7 @@ app.post("/user", async (req, res) => {
 
     return res.status(200).json(existingUser);
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });

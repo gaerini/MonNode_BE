@@ -1,5 +1,5 @@
 const { Sequelize } = require("sequelize");
-const sequelize = new Sequelize("Monnode", "root", "", {
+const sequelize = new Sequelize("Monnode", "root", "1234", {
   host: "mariadb",
   dialect: "mariadb",
 });

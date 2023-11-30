@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
 app.get("/myposts", async (req, res) => {
   console.log(req.params);
   try {
-    const userId = await User.findUserByEmail(req.params.email);
+    const userId = await User.findUserByEmail(req.query.email);
     console.log(userId);
     const userPosts = await Post.findAllbyUserId(userId);
 
@@ -147,7 +147,7 @@ app.post("/friendRequest", async (req, res) => {
 
 app.get("/friendRetrieve", async (req, res) => {
   console(req.params);
-  const userId = User.findUserByEmail(req.params.email);
+  const userId = User.findUserByEmail(req.query.email);
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     const usernamePromises = friendsIdList.map((friendId) =>
@@ -187,7 +187,7 @@ app.post("/friendUpdate", async (req, res) => {
 
 app.get("/payload", auth, (req, res) => {
   console.log(req.params);
-  const userId = User.findUserByEmail(req.params.email);
+  const userId = User.findUserByEmail(req.query.email);
 
   // Load user's info by userId
   User.findByPk(userId)

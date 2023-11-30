@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 
 //post api
 app.get("/myposts", async (req, res) => {
-  console.log(req.params);
+  console.log(req.query);
   try {
     const userId = await User.findUserByEmail(req.query.email);
     console.log(userId);
@@ -136,7 +136,7 @@ app.post("/friendRequest", async (req, res) => {
       email: req.body.requesterEmail,
     },
   });
-  
+
   const addresseeUser = await User.findOne({
     where: {
       email: req.body.addresseeEmail,
@@ -144,7 +144,7 @@ app.post("/friendRequest", async (req, res) => {
   });
   const requesterId = requesterUser.dataValues.id;
   const addresseeId = addresseeUser.dataValues.id;
-   //find req, add user by email
+  //find req, add user by email
   console.log(requesterId, addresseeId);
   console.log(req.body.requesterEmail);
   try {

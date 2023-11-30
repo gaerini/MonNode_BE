@@ -82,7 +82,7 @@ Friend.retrieveFriends = async function (userId) {
       },
     });
     if (friends.length === 0) {
-      return "친구가 없습니다.";
+      return [];
     } else {
       friendsIdList = [];
       friends.map((friend) => {

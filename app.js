@@ -160,7 +160,7 @@ app.post("/friendRequest", async (req, res) => {
 });
 
 app.get("/friendRetrieve", async (req, res) => {
-  console(req.params);
+  console.log(req.query);
   const userId = User.findUserByEmail(req.query.email);
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);

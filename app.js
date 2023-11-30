@@ -163,7 +163,7 @@ app.get("/friendRetrieve", async (req, res) => {
   console.log(req.query);
   const userId = User.findUserByEmail(req.query.email);
   try {
-    const friendsIdList = await Friend.retrieveFriends(userId);
+    const friendsIdList = (await Friend.retrieveFriends(userId)) || [];
     const usernamePromises = friendsIdList.map((friendId) =>
       User.retrieveUserName(friendId)
     );

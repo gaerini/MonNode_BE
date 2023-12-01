@@ -201,6 +201,28 @@ app.get("/friendRetrieve", async (req, res) => {
   }
 });
 
+app.get("/checkIfFriend", async (req, res) => {
+  console.log(req.query);
+  const userId = User.findUserByEmail(req.query.userEmail);
+  const checkId = User.findUserByEmail(req.query.checkEmail);
+  try {
+    const friendsIdList = await Friend.retrieveFriends(userId);
+    console.log(friendsIdList);
+    friendsIdList.map((friendId) => {
+      if (friendId === checkId) {
+        return res.json({ success: true, isFriend: true });
+      }
+    });
+    res.json({ success: true, isFriend: false });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: "서버 에러",
+    });
+  }
+});
+
 app.get("/userRetrieve", async (req, res) => {
   console.log(req.query);
   const userId = User.findUserByEmail(req.query.email);

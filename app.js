@@ -183,7 +183,7 @@ app.post("/friendAdd", async (req, res) => {
 
 app.get("/friendRetrieve", async (req, res) => {
   console.log(req.query);
-  const userId = User.findUserByEmail(req.query.email);
+  const userId = await User.findUserByEmail(req.query.email);
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     console.log(friendsIdList);
@@ -203,8 +203,8 @@ app.get("/friendRetrieve", async (req, res) => {
 
 app.get("/checkIfFriend", async (req, res) => {
   console.log(req.query);
-  const userId = User.findUserByEmail(req.query.userEmail);
-  const checkId = User.findUserByEmail(req.query.checkEmail);
+  const userId = await User.findUserByEmail(req.query.userEmail);
+  const checkId = await User.findUserByEmail(req.query.checkEmail);
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     console.log(friendsIdList);

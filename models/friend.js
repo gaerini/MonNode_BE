@@ -70,6 +70,7 @@ Friend.retrieveFriends = async function (userId) {
     if (friends.length === 0) {
       return [];
     } else {
+      console.log(friends);
       let friendsIdList = [];
       friends.map((friend) => {
         if (friend.FollowerId === userId) {

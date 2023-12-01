@@ -47,6 +47,18 @@ app.get("/myposts", async (req, res) => {
   }
 });
 
+app.get("/allposts", async (req, res) => {
+  console.log(req.query);
+  try {
+    const allPosts = await Post.findAll();
+
+    res.json({ success: true, allPosts: allPosts });
+  } catch (err) {
+    console.error("Error retrieving user posts:", err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
 app.post("/signup", async (req, res) => {
   try {
     console.log(req.body);

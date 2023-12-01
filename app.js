@@ -208,12 +208,8 @@ app.get("/checkIfFriend", async (req, res) => {
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     console.log(friendsIdList);
-    friendsIdList.map((friendId) => {
-      if (friendId === checkId) {
-        return res.json({ success: true, isFriend: true });
-      }
-    });
-    res.json({ success: true, isFriend: false });
+    const isFriend = friendsIdList.some((friendId) => friendId === checkId);
+    return res.json({ success: true, isFriend: isFriend });
   } catch (err) {
     console.error(err);
     return res.status(500).json({

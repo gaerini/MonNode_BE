@@ -13,7 +13,7 @@ Friend.Follow = async function (FollowerId, FolloweeId) {
       where: {
         [Op.or]: [
           {
-            [Op.and]: [{ FollwerId: FollwerId }, { FolloweeId: FolloweeId }],
+            [Op.and]: [{ FollowerId: FollwerId }, { FolloweeId: FolloweeId }],
           },
           {
             [Op.and]: [{ FollowerId: FolloweeId }, { FolloweeId: FollowerId }],

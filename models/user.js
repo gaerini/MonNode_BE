@@ -53,7 +53,11 @@ User.findUserByEmail = async function (email) {
         email: email,
       },
     });
-    return user.dataValues.id;
+    if (user) {
+      return user.dataValues.id;
+    } else {
+      return null;
+    }
   } catch (err) {
     throw err;
   }

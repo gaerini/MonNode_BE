@@ -187,8 +187,8 @@ app.get("/friendRetrieve", async (req, res) => {
   try {
     const friendsIdList = await Friend.retrieveFriends(userId);
     console.log(friendsIdList);
-    const usernamePromises = friendsIdList.map((friendId) =>
-      User.retrieveUserName(friendId)
+    const usernamePromises = friendsIdList.map(
+      async (friendId) => await User.retrieveUserName(friendId)
     );
     const usernameList = await Promise.all(usernamePromises);
     res.json({ success: true, friends: usernameList });
@@ -213,7 +213,7 @@ app.get("/checkIfFriend", async (req, res) => {
         return res.json({ success: true, isFriend: true });
       }
     });
-    res.json({ success: true, isFriend: false });
+    return res.json({ success: true, isFriend: false });
   } catch (err) {
     console.error(err);
     return res.status(500).json({

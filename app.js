@@ -233,6 +233,7 @@ app.get("/userRetrieve", async (req, res) => {
           id: userId,
         },
       });
+      console.log(user);
       return res.json({ success: true, user: user });
     }
   } catch (error) {
@@ -244,22 +245,22 @@ app.get("/userRetrieve", async (req, res) => {
   }
 });
 
-app.get("/findusernamebyid", async (req, res) => {
-  console.log(req.query);
-  const userId = User.findUserByEmail(req.query.id);
-  try {
-    if (userId) {
-      const username = User.retrieveUserName(userId);
-      return res.json({ success: true, username: username });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      code: 500,
-      message: "서버 에러",
-    });
-  }
-});
+// app.get("/findusernamebyid", async (req, res) => {
+//   console.log(req.query);
+//   const userId = User.findUserByEmail(req.query.id);
+//   try {
+//     if (userId) {
+//       const username = User.retrieveUserName(userId);
+//       return res.json({ success: true, username: username });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       code: 500,
+//       message: "서버 에러",
+//     });
+//   }
+// });
 
 // app.post("/friendUpdate", async (req, res) => {
 //   console.log(req.body);

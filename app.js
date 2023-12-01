@@ -299,6 +299,31 @@ app.put("/user", async (req, res) => {
   }
 });
 
+app.put("/updateDecibels", async (req, res) => {
+  console.log(req.body);
+  const { email, postId, decibels } = req.body;
+  try {
+    if (email) {
+      await Post.update(
+        { decibels: decibels },
+        {
+          where: {
+            id: postId,
+          },
+        }
+      );
+      const updatedPost = await Post.findOne({
+        where: {
+          id: postId,
+        },
+      });
+      return res.status(200).json(updatedPost);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 app.delete("/deletePost", async (req, res) => {
   const postId = req.postId;
   try {

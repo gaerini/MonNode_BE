@@ -24,7 +24,13 @@ sequelize
     console.error("테이블 생성 중 오류 발생: ", err);
   });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://127.0.0.1:3000",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 

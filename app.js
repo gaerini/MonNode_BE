@@ -228,7 +228,7 @@ app.get("/userRetrieve", async (req, res) => {
   const userId = await User.findUserByEmail(req.query.email);
   try {
     if (userId) {
-      const user = User.findOne({
+      const user = await User.findOne({
         where: {
           id: userId,
         },

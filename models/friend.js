@@ -70,7 +70,7 @@ Friend.retrieveFriends = async function (userId) {
     if (friends.length === 0) {
       return [];
     } else {
-      friendsIdList = [];
+      let friendsIdList = [];
       friends.map((friend) => {
         if (friend.FollowerId === userId) {
           friendsIdList.push(friend.FolloweeId);
@@ -78,8 +78,8 @@ Friend.retrieveFriends = async function (userId) {
           friendsIdList.push(friend.FollowerId);
         }
       });
+      return friendsIdList;
     }
-    return friendsIdList;
   } catch (err) {
     throw err;
   }

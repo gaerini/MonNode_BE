@@ -59,6 +59,16 @@ app.get("/allposts", async (req, res) => {
   }
 });
 
+app.get("/finduserbyemail", async (req, res) => {
+  console.log(req.query);
+  try {
+    const searchedUser = await User.findUserByEmail(req.query.email);
+    res.json({ success: true, searchedUser: searchedUser });
+  } catch (err) {
+    console.error("Error retrieving user:", err);
+  }
+});
+
 app.post("/signup", async (req, res) => {
   try {
     console.log(req.body);
@@ -184,6 +194,27 @@ app.get("/friendRetrieve", async (req, res) => {
     res.json({ success: true, friends: usernameList });
   } catch (err) {
     console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: "서버 에러",
+    });
+  }
+});
+
+app.get("/userRetrieve", async (req, res) => {
+  console.log(req.query);
+  const userId = User.findUserByEmail(req.query.email);
+  try {
+    if (userId) {
+      const user = User.findOne({
+        where: {
+          id: userId,
+        },
+      });
+      return res.json({ success: true, user: user });
+    }
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({
       code: 500,
       message: "서버 에러",

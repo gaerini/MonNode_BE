@@ -141,27 +141,27 @@ app.post("/login", async (req, res, next) => {
   }
 });
 
-app.post("/friendRequest", async (req, res) => {
+app.post("/friendAdd", async (req, res) => {
   console.log(req.body);
-  const requesterUser = await User.findOne({
+  const FollowerUser = await User.findOne({
     where: {
-      email: req.body.requesterEmail,
+      email: req.body.FollowerEmail,
     },
   });
 
-  const addresseeUser = await User.findOne({
+  const FolloweeUser = await User.findOne({
     where: {
-      email: req.body.addresseeEmail,
+      email: req.body.FolloweeEmail,
     },
   });
-  const requesterId = requesterUser.dataValues.id;
-  const addresseeId = addresseeUser.dataValues.id;
+  const FollowerId = FollowerUser.dataValues.id;
+  const FolloweeId = FolloweeUser.dataValues.id;
   //find req, add user by email
-  console.log(requesterId, addresseeId);
-  console.log(req.body.requesterEmail);
+  console.log(FollowerId, FolloweeId);
+  console.log(req.body.FollowerEmail);
   try {
-    const newRequest = await Friend.requestFriendship(requesterId, addresseeId);
-    res.json({ success: true, user: newRequest });
+    const newFollow = await Friend.Follow(FollowerId, FolloweeId);
+    res.json({ success: true, user: newFollow });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
@@ -191,26 +191,26 @@ app.get("/friendRetrieve", async (req, res) => {
   }
 });
 
-app.post("/friendUpdate", async (req, res) => {
-  console.log(req.body);
-  const requesterId = User.findUserByEmail(req.requsterEmail);
-  const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
-  const { action } = req.body;
-  try {
-    const newUpdate = await Friend.updateFriendship(
-      requesterId,
-      addresseeId,
-      action
-    );
-    res.json({ success: true, status: newUpdate });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      code: 500,
-      message: "Interner server error",
-    });
-  }
-});
+// app.post("/friendUpdate", async (req, res) => {
+//   console.log(req.body);
+//   const requesterId = User.findUserByEmail(req.requsterEmail);
+//   const addresseeId = User.findUserByEmail(req.addresseeEmail); //find req, add user by email
+//   const { action } = req.body;
+//   try {
+//     const newUpdate = await Friend.updateFriendship(
+//       requesterId,
+//       addresseeId,
+//       action
+//     );
+//     res.json({ success: true, status: newUpdate });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({
+//       code: 500,
+//       message: "Interner server error",
+//     });
+//   }
+// });
 
 app.get("/payload", auth, (req, res) => {
   console.log(req.params);

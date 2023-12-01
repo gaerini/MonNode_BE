@@ -225,7 +225,7 @@ app.get("/checkIfFriend", async (req, res) => {
 
 app.get("/userRetrieve", async (req, res) => {
   console.log(req.query);
-  const userId = User.findUserByEmail(req.query.email);
+  const userId = await User.findUserByEmail(req.query.email);
   try {
     if (userId) {
       const user = User.findOne({

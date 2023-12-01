@@ -24,13 +24,7 @@ sequelize
     console.error("테이블 생성 중 오류 발생: ", err);
   });
 
-app.use(
-  cors({
-    origin: "http://127.0.0.1:3000",
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -219,7 +213,7 @@ app.get("/checkIfFriend", async (req, res) => {
         return res.json({ success: true, isFriend: true });
       }
     });
-    return res.json({ success: true, isFriend: false });
+    res.json({ success: true, isFriend: false });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
